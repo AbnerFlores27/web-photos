@@ -16,6 +16,8 @@ import {
   ThreeBaseballCanvas,
   PITCH_PRESETS,
 } from './ThreeBaseballCanvas';
+import { CesarDogPlayOverlay } from './CesarDogPlayOverlay';
+import { BaseballCatchOverlay } from './BaseballCatchOverlay';
 import {
   Wrench,
   X,
@@ -108,6 +110,9 @@ export function PhotoEffectOverlay({
   photoTitle,
   onClose,
 }: PhotoEffectOverlayProps) {
+  // Mode selection for baseball effect
+  const [baseballMode, setBaseballMode] = useState<'stands-catch' | 'windshield-shatter'>('stands-catch');
+
   // Pitch & Cinema Settings
   const [pitchKey, setPitchKey] = useState<string>('fastball');
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
@@ -539,6 +544,30 @@ export function PhotoEffectOverlay({
 
   if (!effectType) return null;
 
+  // ROUTE 1: Cesar the Golden Retriever - Full Interactive Dog Playground
+  if (effectType === 'puppy-bounce') {
+    return <CesarDogPlayOverlay onClose={onClose} />;
+  }
+
+  // ROUTE 2: Baseball Catch in the Bleachers (Default Mode)
+  if (effectType === 'baseball-crack' && baseballMode === 'stands-catch') {
+    return (
+      <div className="fixed inset-0 z-50">
+        <BaseballCatchOverlay photoTitle={photoTitle} onClose={onClose} />
+        {/* Toggle button to switch to 3D WebGL Camera Lens Shatter */}
+        <div className="fixed top-3 right-24 sm:right-28 z-50 pointer-events-auto">
+          <button
+            onClick={() => setBaseballMode('windshield-shatter')}
+            className="px-3 py-1.5 rounded-xl bg-black/70 hover:bg-black/90 text-amber-300 border border-amber-500/40 text-[11px] font-mono font-bold flex items-center gap-1.5 shadow-xl backdrop-blur-md cursor-pointer transition-all hover:scale-105"
+            title="Switch to 3D WebGL Camera Lens Shatter"
+          >
+            <span>💥 SHATTER LENS MODE</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       id="photo-interactive-fx-layer"
@@ -566,8 +595,18 @@ export function PhotoEffectOverlay({
           </div>
         </div>
 
-        {/* Top Controls: Audio, Dismiss */}
+        {/* Top Controls: Audio, Mode Switch, Dismiss */}
         <div className="flex items-center gap-2">
+          {effectType === 'baseball-crack' && (
+            <button
+              onClick={() => setBaseballMode('stands-catch')}
+              className="px-2.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-mono flex items-center gap-1.5 transition-colors cursor-pointer"
+              title="Switch to Stadium Bleachers Catch Game"
+            >
+              <span>🏟️ STANDS CATCH GAME</span>
+            </button>
+          )}
+
           {effectType === 'baseball-crack' && (
             <button
               onClick={() => setIsAudioMuted(!isAudioMuted)}
@@ -803,120 +842,153 @@ export function PhotoEffectOverlay({
         )}
 
         {/* ========================================================================= */}
-        {/* EFFECT 2: GOLDEN RETRIEVER PUPPY                                          */}
-        {/* ========================================================================= */}
-        {effectType === 'puppy-bounce' && (
-          <div className="relative w-full h-full flex flex-col items-center justify-center pointer-events-none">
-            <div className="absolute inset-0 bg-radial from-amber-500/25 via-yellow-600/10 to-transparent" />
-            <motion.div
-              initial={{ y: -500, scale: 0.4, rotate: 0 }}
-              animate={{
-                y: [-500, 150, -60, 150, 40, 150],
-                scale: [0.4, 1.1, 0.9, 1.05, 0.95, 1],
-                rotate: [0, 360, 540, 720, 840, 960],
-              }}
-              transition={{
-                duration: 2.2,
-                times: [0, 0.35, 0.55, 0.75, 0.88, 1],
-                ease: 'easeInOut',
-              }}
-              className="relative z-30 w-32 h-32 rounded-full bg-gradient-to-br from-[#bef264] via-[#a3e635] to-[#4d7c0f] shadow-[inset_-8px_-8px_16px_rgba(0,0,0,0.35),0_15px_30px_rgba(0,0,0,0.6)] flex items-center justify-center border-2 border-[#ecfccb]"
-            >
-              <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full" fill="none">
-                <path d="M 25 15 C 45 40, 45 60, 25 85" stroke="#ffffff" strokeWidth="4" strokeLinecap="round" />
-                <path d="M 75 15 C 55 40, 55 60, 75 85" stroke="#ffffff" strokeWidth="4" strokeLinecap="round" />
-              </svg>
-            </motion.div>
-          </div>
-        )}
-
-        {/* ========================================================================= */}
-        {/* EFFECT 3: PACIFIC COAST SUNSET                                             */}
+        {/* EFFECT 3: PACIFIC COAST SUNSET (CINEMATIC TIDAL SWELL)                    */}
         {/* ========================================================================= */}
         {effectType === 'ocean-splash' && (
           <div className="relative w-full h-full flex items-center justify-center pointer-events-none">
+            {/* Dynamic Sunset Coastal Horizon */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#082f49] via-[#0284c7]/40 to-transparent" />
+
+            {/* Surging Oceanic Wave Barrel */}
             <motion.div
-              initial={{ y: '100%' }}
-              animate={{ y: ['100%', '15%', '60%'] }}
-              transition={{ duration: 1.4, ease: 'easeOut' }}
-              className="absolute bottom-0 left-0 right-0 h-[80vh] bg-gradient-to-t from-cyan-950/90 via-sky-800/70 to-transparent flex flex-col justify-end"
+              initial={{ y: '100%', scaleY: 0.8 }}
+              animate={{ y: ['100%', '8%', '45%', '12%'], scaleY: [0.8, 1.1, 0.95, 1.05] }}
+              transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute bottom-0 left-0 right-0 h-[85vh] bg-gradient-to-t from-[#0369a1] via-[#38bdf8]/80 to-[#bae6fd]/30 rounded-t-[50%_30%] flex flex-col justify-start shadow-[0_-20px_60px_rgba(56,189,248,0.5)]"
             >
-              <div className="h-12 w-full bg-gradient-to-r from-transparent via-cyan-200/50 to-transparent blur-md" />
+              {/* White Frothy Sea Foam Crest */}
+              <div className="h-10 w-full bg-gradient-to-r from-white/90 via-cyan-100 to-white/90 blur-[2px] rounded-t-[50%_30%]" />
+              <div className="h-4 w-full bg-white/60 blur-[6px] -mt-2" />
             </motion.div>
+
+            {/* Shimmering Sun Rays Refraction */}
+            <div className="absolute top-10 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full bg-amber-300/20 blur-3xl animate-pulse" />
+
+            {/* Ocean Telemetry Pill */}
+            <div className="absolute bottom-12 bg-sky-950/80 border border-sky-400/40 px-5 py-2 rounded-full text-sky-200 font-mono text-xs shadow-xl backdrop-blur-md flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+              <span>PACIFIC SWELL &bull; 8.4 FT GROUND TIDE &bull; CLICK TO SPLASH</span>
+            </div>
           </div>
         )}
 
         {/* ========================================================================= */}
-        {/* EFFECT 4: ALPINE MOUNTAIN PEAKS                                           */}
+        {/* EFFECT 4: ALPINE MOUNTAIN PEAKS (SUB-ZERO BLIZZARD FROST)                 */}
         {/* ========================================================================= */}
         {effectType === 'alpine-frost' && (
           <div className="relative w-full h-full flex items-center justify-center pointer-events-none">
+            {/* Ice Frost Creeping Edges with crystalline vignettes */}
             <motion.div
-              initial={{ opacity: 0, scale: 1.1 }}
+              initial={{ opacity: 0, scale: 1.05 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 1.2, ease: 'easeOut' }}
-              className="absolute inset-0 border-[36px] sm:border-[54px] border-cyan-100/60 shadow-[inset_0_0_100px_rgba(186,230,253,0.8)] backdrop-blur-[2px]"
+              className="absolute inset-0 border-[32px] sm:border-[48px] border-cyan-100/70 shadow-[inset_0_0_120px_rgba(186,230,253,0.9)] backdrop-blur-[3px]"
             />
+
+            {/* Floating Ice Crystals & Snowflake Swirls */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(14,116,144,0.3)_100%)]" />
+
+            {/* Frost Breath Fog */}
+            <motion.div
+              animate={{ opacity: [0.2, 0.5, 0.2], scale: [0.95, 1.05, 0.95] }}
+              transition={{ duration: 3, repeat: Infinity }}
+              className="w-80 h-80 rounded-full bg-cyan-200/20 blur-3xl"
+            />
+
+            {/* Alpine Telemetry Pill */}
+            <div className="absolute bottom-12 bg-[#082f49]/85 border border-cyan-400/40 px-5 py-2 rounded-full text-cyan-200 font-mono text-xs shadow-xl backdrop-blur-md flex items-center gap-2">
+              <span>❄️</span>
+              <span>ALPINE GLACIER &bull; -14&deg;C CRYO CRYSTALLIZATION</span>
+            </div>
           </div>
         )}
 
         {/* ========================================================================= */}
-        {/* EFFECT 5: COZY CAFE                                                       */}
+        {/* EFFECT 5: COZY CAFE (VOLUMETRIC ESPRESSO STEAM & ROAST AROMA)             */}
         {/* ========================================================================= */}
         {effectType === 'cafe-steam' && (
           <div className="relative w-full h-full flex items-center justify-center pointer-events-none">
-            <div className="absolute inset-0 bg-radial from-amber-600/20 via-orange-950/15 to-transparent" />
-            {[0, 1, 2].map((idx) => (
+            {/* Warm Amber Ambient Glow */}
+            <div className="absolute inset-0 bg-radial from-amber-600/25 via-amber-950/15 to-transparent" />
+
+            {/* Volumetric Curling Steam Wisps */}
+            {[0, 1, 2, 3].map((idx) => (
               <motion.div
                 key={idx}
-                initial={{ y: 200, opacity: 0, scale: 0.6 }}
+                initial={{ y: 250, opacity: 0, scale: 0.5 }}
                 animate={{
-                  y: -300,
-                  opacity: [0, 0.6, 0.2, 0],
-                  scale: [0.6, 1.4, 2.2],
-                  x: [0, (idx - 1) * 60, (idx - 1) * 100],
+                  y: -350,
+                  opacity: [0, 0.7, 0.3, 0],
+                  scale: [0.5, 1.6, 2.5],
+                  x: [0, (idx % 2 === 0 ? 1 : -1) * 70, (idx % 2 === 0 ? -1 : 1) * 110],
                 }}
                 transition={{
                   repeat: Infinity,
-                  duration: 3.5,
-                  delay: idx * 0.8,
+                  duration: 4.2,
+                  delay: idx * 0.9,
                   ease: 'easeOut',
                 }}
-                className="absolute w-40 h-80 rounded-full bg-gradient-to-t from-transparent via-white/10 to-transparent blur-2xl"
+                className="absolute w-48 h-96 rounded-full bg-gradient-to-t from-transparent via-amber-100/15 to-transparent blur-3xl"
               />
             ))}
+
+            {/* Cafe Telemetry Pill */}
+            <div className="absolute bottom-12 bg-[#291708]/85 border border-amber-500/40 px-5 py-2 rounded-full text-amber-200 font-mono text-xs shadow-xl backdrop-blur-md flex items-center gap-2">
+              <span>☕</span>
+              <span>ETHIOPIAN YIRGACHEFFE &bull; 93&deg;C FRESH POUR-OVER AROMA</span>
+            </div>
           </div>
         )}
 
         {/* ========================================================================= */}
-        {/* EFFECT 6: CITY SKYLINE                                                    */}
+        {/* EFFECT 6: CITY SKYLINE (NEO-TOKYO CYBERPUNK PULSE)                        */}
         {/* ========================================================================= */}
         {effectType === 'city-pulse' && (
           <div className="relative w-full h-full flex items-center justify-center pointer-events-none">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [0, 0.8, 0.2, 0.9, 0.3] }}
-              transition={{ duration: 1.2, repeat: 2 }}
-              className="absolute inset-0 bg-[linear-gradient(to_right,#0284c715_1px,transparent_1px),linear-gradient(to_bottom,#0284c715_1px,transparent_1px)] bg-[size:4rem_4rem]"
-            />
+            {/* Neon Perspective Grid */}
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#06b6d420_1px,transparent_1px),linear-gradient(to_bottom,#d946ef20_1px,transparent_1px)] bg-[size:3rem_3rem]" />
+
+            {/* Equalizer Audio Towers Pulsing */}
+            <div className="absolute bottom-20 left-10 right-10 flex items-end justify-between h-36 opacity-70">
+              {[...Array(24)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  animate={{ height: ['15%', `${Math.random() * 80 + 20}%`, '20%'] }}
+                  transition={{ duration: 0.3 + (i % 5) * 0.1, repeat: Infinity, ease: 'easeInOut' }}
+                  className="w-2 sm:w-3 bg-gradient-to-t from-cyan-500 via-fuchsia-500 to-white rounded-t-sm shadow-[0_0_12px_rgba(217,70,239,0.8)]"
+                />
+              ))}
+            </div>
+
+            {/* Anamorphic Laser Sweep */}
             <motion.div
               initial={{ scaleX: 0, opacity: 0 }}
-              animate={{ scaleX: [0, 1.5, 1], opacity: [0, 1, 0.6] }}
-              transition={{ duration: 0.6 }}
-              className="absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-fuchsia-500 to-transparent shadow-[0_0_30px_#d946ef]"
+              animate={{ scaleX: [0, 1.5, 1], opacity: [0, 1, 0.7] }}
+              transition={{ duration: 0.8 }}
+              className="absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_40px_#06b6d4]"
             />
+
+            {/* Telemetry Pill */}
+            <div className="absolute bottom-12 bg-[#0a0f1d]/85 border border-fuchsia-500/40 px-5 py-2 rounded-full text-fuchsia-200 font-mono text-xs shadow-xl backdrop-blur-md flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-fuchsia-400 animate-ping" />
+              <span>NEO-TOKYO PULSE &bull; 132 BPM SYNTHWAVE AUDIO MATRIX</span>
+            </div>
           </div>
         )}
 
         {/* ========================================================================= */}
-        {/* EFFECT 7: AUTUMN FOREST                                                   */}
+        {/* EFFECT 7: AUTUMN FOREST (CANOPY GUST & WHIRLWIND)                         */}
         {/* ========================================================================= */}
         {effectType === 'autumn-leaves' && (
           <div className="relative w-full h-full flex items-center justify-center pointer-events-none">
+            {/* Warm Golden Hour Sun Rays */}
+            <div className="absolute inset-0 bg-radial from-amber-500/20 via-orange-950/10 to-transparent" />
+
+            {/* Autumn Telemetry Pill */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="absolute bottom-24 bg-[#291708]/85 border border-amber-600/40 px-6 py-2.5 rounded-full text-amber-200 font-mono text-xs shadow-xl backdrop-blur-md flex items-center gap-2"
+              className="absolute bottom-12 bg-[#291708]/85 border border-amber-600/40 px-6 py-2.5 rounded-full text-amber-200 font-mono text-xs shadow-xl backdrop-blur-md flex items-center gap-2"
             >
               <span>🍁</span>
               <span>CANOPY GUST VORTEX &bull; 45 MPH CRISP WOODLAND GALE</span>
@@ -925,11 +997,23 @@ export function PhotoEffectOverlay({
         )}
 
         {/* ========================================================================= */}
-        {/* EFFECT 8: COSMIC WARP SPEED                                               */}
+        {/* EFFECT 8: COSMIC WARP SPEED (GRAVITATIONAL ACCRETION)                     */}
         {/* ========================================================================= */}
         {effectType === 'cosmic-warp' && (
           <div className="relative w-full h-full flex items-center justify-center pointer-events-none">
-            <div className="w-28 h-28 rounded-full bg-indigo-500/30 blur-3xl" />
+            {/* Relativistic Accretion Lensing Ring */}
+            <motion.div
+              animate={{ rotate: 360, scale: [1, 1.08, 1] }}
+              transition={{ rotate: { duration: 15, repeat: Infinity, ease: 'linear' }, scale: { duration: 2, repeat: Infinity } }}
+              className="w-72 h-72 rounded-full border-4 border-dashed border-cyan-400/60 shadow-[0_0_100px_rgba(56,189,248,0.8)]"
+            />
+            <div className="absolute w-32 h-32 rounded-full bg-indigo-600/40 blur-2xl animate-pulse" />
+
+            {/* Cosmic Telemetry Pill */}
+            <div className="absolute bottom-12 bg-black/85 border border-indigo-500/40 px-5 py-2 rounded-full text-indigo-200 font-mono text-xs shadow-xl backdrop-blur-md flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+              <span>WARP SPEED FACTOR 9.2 &bull; EVENT HORIZON SINGULARITY</span>
+            </div>
           </div>
         )}
       </div>

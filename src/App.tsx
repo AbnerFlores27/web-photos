@@ -61,7 +61,7 @@ const PHOTOS: PhotoItem[] = [
     naturalDescription:
       'Standing in the outfield under the blazing Southern California sun, Mike Trout embodies raw athletic concentration. The natural grass of Angel Stadium shimmers in the dry midday heat while red clay and infield chalk dust cling to his uniform from live game action. Natural sunlight catches the stitching of his Angels jersey and the focused intensity in his eyes. Without artificial studio lighting, the image captures the genuine pulse, grit, and history of modern American baseball.',
     effectType: 'baseball-crack',
-    effectName: '3D WebGL Fastball & Interactive Glass Shatter (Cinema Masterpiece)',
+    effectName: 'Home Run Blast to the Stands (Interactive Bleachers Catch)',
     cameraInfo: {
       gear: 'Canon EOS-1D X Mark III',
       focal: '400mm f/2.8L IS',
@@ -72,18 +72,18 @@ const PHOTOS: PhotoItem[] = [
   },
   {
     id: 'photo-2',
-    title: 'Golden Retriever Puppy',
+    title: 'Cesar the Golden Retriever',
     category: 'original',
     badgeLabel: 'Original Master',
     sourceUrl: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=800',
     imageUrl:
       'https://images.unsplash.com/photo-1552053831-71594a27632d?w=800&auto=format&fit=crop&q=80',
-    alt: 'Close-up of an adorable golden retriever puppy lying on soft grass',
-    shortSummary: 'Organic morning portrait with natural golden backlighting and grass bokeh.',
+    alt: 'Close-up portrait of Cesar the golden retriever puppy lying on soft green grass',
+    shortSummary: 'Organic morning portrait of Cesar the golden retriever with warm backlighting and grass bokeh.',
     naturalDescription:
-      'Bathed in the gentle golden rays of early morning sunlight, this puppy rests quietly among dew-kissed blades of spring lawn. Every individual strand of soft honey fur catches the warm backlighting, forming a glowing halo around its floppy ears and dark curious eyes. The soil beneath is cool and damp, grounding the portrait in pure organic serenity. Captured without flashes or artificial bounce cards, it radiates calm breathing, youthful innocence, and faithful canine companionship.',
+      'Bathed in the gentle golden rays of early morning sunlight, Cesar the golden retriever puppy rests quietly among dew-kissed blades of spring lawn. Every individual strand of soft honey fur catches the warm backlighting, forming a glowing halo around his floppy ears and dark curious eyes. The soil beneath is cool and damp, grounding the portrait in pure organic serenity. Captured without flashes or artificial bounce cards, Cesar radiates calm breathing, playful energy, and faithful canine companionship.',
     effectType: 'puppy-bounce',
-    effectName: 'Playful Tennis Ball & Paw Prints',
+    effectName: 'Play Fetch & Belly Rubs with Cesar 🐾',
     cameraInfo: {
       gear: 'Sony A7R IV',
       focal: '85mm f/1.4 GM',

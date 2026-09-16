@@ -19,8 +19,320 @@ function getAudioContext(): AudioContext | null {
 }
 
 /**
- * Rising Doppler whoosh for incoming baseball pitch
+ * Solid Ash/Maple Wood Bat Crack (Sharp high-energy transient with stadium reverb)
  */
+export function playBatCrackSound() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+
+  // 1. Initial sharp wood snap
+  const snapOsc = ctx.createOscillator();
+  const snapGain = ctx.createGain();
+  snapOsc.type = 'triangle';
+  snapOsc.frequency.setValueAtTime(1100, now);
+  snapOsc.frequency.exponentialRampToValueAtTime(120, now + 0.04);
+  snapGain.gain.setValueAtTime(0.9, now);
+  snapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+  snapOsc.connect(snapGain);
+  snapGain.connect(ctx.destination);
+  snapOsc.start(now);
+  snapOsc.stop(now + 0.06);
+
+  // 2. Heavy core impact thud (bat body vibration)
+  const thudOsc = ctx.createOscillator();
+  const thudGain = ctx.createGain();
+  thudOsc.type = 'sine';
+  thudOsc.frequency.setValueAtTime(260, now);
+  thudOsc.frequency.exponentialRampToValueAtTime(55, now + 0.12);
+  thudGain.gain.setValueAtTime(1.0, now);
+  thudGain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+  thudOsc.connect(thudGain);
+  thudGain.connect(ctx.destination);
+  thudOsc.start(now);
+  thudOsc.stop(now + 0.16);
+
+  // 3. Wood grain acoustic shockwave
+  const bufferSize = Math.floor(ctx.sampleRate * 0.12);
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.02));
+  }
+  const noise = ctx.createBufferSource();
+  noise.buffer = buffer;
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.setValueAtTime(1800, now);
+  filter.Q.setValueAtTime(4.0, now);
+  const noiseGain = ctx.createGain();
+  noiseGain.gain.setValueAtTime(0.8, now);
+  noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+  noise.connect(filter);
+  filter.connect(noiseGain);
+  noiseGain.connect(ctx.destination);
+  noise.start(now);
+  noise.stop(now + 0.12);
+}
+
+/**
+ * Deep Leather Baseball Glove Pocket Catch ("THWACK!")
+ */
+export function playGloveCatchSound() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+
+  // Leather slap high-mid slap
+  const slapOsc = ctx.createOscillator();
+  const slapGain = ctx.createGain();
+  slapOsc.type = 'sawtooth';
+  slapOsc.frequency.setValueAtTime(680, now);
+  slapOsc.frequency.exponentialRampToValueAtTime(140, now + 0.035);
+  slapGain.gain.setValueAtTime(0.75, now);
+  slapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+  slapOsc.connect(slapGain);
+  slapGain.connect(ctx.destination);
+  slapOsc.start(now);
+  slapOsc.stop(now + 0.05);
+
+  // Deep pocket thump (sub-bass leather cushion)
+  const pocketOsc = ctx.createOscillator();
+  const pocketGain = ctx.createGain();
+  pocketOsc.type = 'sine';
+  pocketOsc.frequency.setValueAtTime(180, now);
+  pocketOsc.frequency.exponentialRampToValueAtTime(45, now + 0.18);
+  pocketGain.gain.setValueAtTime(0.95, now);
+  pocketGain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+  pocketOsc.connect(pocketGain);
+  pocketGain.connect(ctx.destination);
+  pocketOsc.start(now);
+  pocketOsc.stop(now + 0.24);
+
+  // Ball spin friction inside leather webbing
+  const bufSize = Math.floor(ctx.sampleRate * 0.08);
+  const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+  const bufData = buf.getChannelData(0);
+  for (let i = 0; i < bufSize; i++) {
+    bufData[i] = Math.random() * 2 - 1;
+  }
+  const noiseSource = ctx.createBufferSource();
+  noiseSource.buffer = buf;
+  const noiseFilter = ctx.createBiquadFilter();
+  noiseFilter.type = 'lowpass';
+  noiseFilter.frequency.setValueAtTime(900, now);
+  const nGain = ctx.createGain();
+  nGain.gain.setValueAtTime(0.4, now);
+  nGain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+  noiseSource.connect(noiseFilter);
+  noiseFilter.connect(nGain);
+  nGain.connect(ctx.destination);
+  noiseSource.start(now);
+  noiseSource.stop(now + 0.08);
+}
+
+/**
+ * Stadium Bleachers Crowd Roar & Cheering
+ */
+export function playCrowdRoarSound() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+
+  const duration = 2.4;
+  const bufferSize = Math.floor(ctx.sampleRate * duration);
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = Math.random() * 2 - 1;
+  }
+  const noise = ctx.createBufferSource();
+  noise.buffer = buffer;
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.Q.setValueAtTime(1.8, now);
+  filter.frequency.setValueAtTime(650, now);
+  filter.frequency.linearRampToValueAtTime(950, now + 0.6);
+  filter.frequency.exponentialRampToValueAtTime(500, now + duration);
+
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.01, now);
+  gain.gain.exponentialRampToValueAtTime(0.65, now + 0.25);
+  gain.gain.linearRampToValueAtTime(0.55, now + 1.2);
+  gain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+
+  noise.connect(filter);
+  filter.connect(gain);
+  gain.connect(ctx.destination);
+
+  noise.start(now);
+  noise.stop(now + duration);
+}
+
+/**
+ * Crowd Disappointed Gasp ("Ohhh!")
+ */
+export function playCrowdGaspSound() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+
+  const duration = 1.2;
+  const bufferSize = Math.floor(ctx.sampleRate * duration);
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = Math.random() * 2 - 1;
+  }
+  const noise = ctx.createBufferSource();
+  noise.buffer = buffer;
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(600, now);
+  filter.frequency.exponentialRampToValueAtTime(250, now + duration * 0.8);
+
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.05, now);
+  gain.gain.linearRampToValueAtTime(0.4, now + 0.15);
+  gain.gain.exponentialRampToValueAtTime(0.005, now + duration);
+
+  noise.connect(filter);
+  filter.connect(gain);
+  gain.connect(ctx.destination);
+
+  noise.start(now);
+  noise.stop(now + duration);
+}
+
+/**
+ * Cheerful Golden Retriever Bark ("Woof!")
+ */
+export function playDogBarkSound(isDouble: boolean = true) {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+
+  const makeBark = (timeOffset: number, pitchMult: number = 1.0) => {
+    const t = now + timeOffset;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(280 * pitchMult, t);
+    osc.frequency.exponentialRampToValueAtTime(540 * pitchMult, t + 0.04);
+    osc.frequency.exponentialRampToValueAtTime(160 * pitchMult, t + 0.14);
+
+    gain.gain.setValueAtTime(0.01, t);
+    gain.gain.linearRampToValueAtTime(0.5, t + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
+
+    // Mouth formant filter
+    const formant = ctx.createBiquadFilter();
+    formant.type = 'bandpass';
+    formant.frequency.setValueAtTime(750, t);
+    formant.Q.setValueAtTime(3.0, t);
+
+    osc.connect(formant);
+    formant.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(t);
+    osc.stop(t + 0.18);
+  };
+
+  makeBark(0, 1.0);
+  if (isDouble) {
+    makeBark(0.22, 1.08);
+  }
+}
+
+/**
+ * Cute Squeaky Tennis Ball
+ */
+export function playTennisBallSqueakSound() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(1400, now);
+  osc.frequency.linearRampToValueAtTime(2600, now + 0.06);
+  osc.frequency.exponentialRampToValueAtTime(1600, now + 0.13);
+
+  gain.gain.setValueAtTime(0.05, now);
+  gain.gain.linearRampToValueAtTime(0.45, now + 0.04);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(now);
+  osc.stop(now + 0.15);
+}
+
+/**
+ * Dog Belly Rub Happiness Groan / Purr
+ */
+export function playBellyRubHappySound() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(130 + Math.random() * 30, now);
+  osc.frequency.linearRampToValueAtTime(170, now + 0.15);
+  osc.frequency.linearRampToValueAtTime(120, now + 0.35);
+
+  gain.gain.setValueAtTime(0.01, now);
+  gain.gain.linearRampToValueAtTime(0.25, now + 0.1);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(now);
+  osc.stop(now + 0.42);
+}
+
+/**
+ * Dog Catching a Treat (Crunch)
+ */
+export function playTreatCrunchSound() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+
+  // Snap & crunch noise burst
+  const dur = 0.15;
+  const bufSize = Math.floor(ctx.sampleRate * dur);
+  const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < bufSize; i++) {
+    data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.04));
+  }
+  const noise = ctx.createBufferSource();
+  noise.buffer = buf;
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.setValueAtTime(2200, now);
+  filter.Q.setValueAtTime(2.5, now);
+
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.6, now);
+  gain.gain.exponentialRampToValueAtTime(0.01, now + dur);
+
+  noise.connect(filter);
+  filter.connect(gain);
+  gain.connect(ctx.destination);
+
+  noise.start(now);
+  noise.stop(now + dur);
+}
+
 export function playBaseballApproachSound(durationSec: number = 0.75, pitchFactor: number = 1.0) {
   const ctx = getAudioContext();
   if (!ctx) return;
