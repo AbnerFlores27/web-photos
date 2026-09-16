@@ -61,7 +61,7 @@ const PHOTOS: PhotoItem[] = [
     naturalDescription:
       'Standing in the outfield under the blazing Southern California sun, Mike Trout embodies raw athletic concentration. The natural grass of Angel Stadium shimmers in the dry midday heat while red clay and infield chalk dust cling to his uniform from live game action. Natural sunlight catches the stitching of his Angels jersey and the focused intensity in his eyes. Without artificial studio lighting, the image captures the genuine pulse, grit, and history of modern American baseball.',
     effectType: 'baseball-crack',
-    effectName: 'Fastball Line Drive & Cracked Screen',
+    effectName: '3D WebGL Fastball & Interactive Glass Shatter (Cinema Masterpiece)',
     cameraInfo: {
       gear: 'Canon EOS-1D X Mark III',
       focal: '400mm f/2.8L IS',
@@ -127,7 +127,7 @@ const PHOTOS: PhotoItem[] = [
     naturalDescription:
       'The electric stillness of game day just as dusk falls across the stadium bowl. The pristine infield grass is manicured into sharp geometric crosshatch patterns by the grounds crew, set against rich crushed brick dust on the basepaths. High overhead, towering floodlight stanchions begin to hum to life against a deep purple-blue twilight sky. The cool evening air carries the nostalgic scent of freshly mown lawn and evening dew, waiting for the crack of a wooden bat.',
     effectType: 'baseball-crack',
-    effectName: 'Infield Rocket & Glass Shatter',
+    effectName: '3D WebGL Ballpark Heater & Screen Shatter',
     cameraInfo: {
       gear: 'Gemini Imagen 3 Synth',
       focal: '24mm Ultra-Wide Diamond',
@@ -521,7 +521,7 @@ export default function App() {
         <div className="max-w-xl mx-auto p-3 rounded-2xl bg-[#141444]/80 border border-[#4da3ff]/30 text-xs text-[#cbd5e1] flex items-center justify-center gap-2 shadow-md">
           <Play className="w-4 h-4 text-[#4da3ff] shrink-0" />
           <span>
-            <strong>Interactive Feature:</strong> Click any photo below to launch its custom animation! Press the baseball photos for the <em>flying ball &amp; cracked screen</em> effect!
+            <strong>Absolute Cinema:</strong> Click any photograph to launch its high-octane 60FPS physics animation &amp; sound design! Experience the 104.7 MPH fastball screen shatter on the baseball photos.
           </span>
         </div>
       </section>
@@ -759,7 +759,7 @@ export default function App() {
                       className="px-3 py-1.5 bg-[#1a1a60] hover:bg-[#25257d] text-white text-xs font-semibold rounded-xl border border-white/15 transition-all flex items-center gap-1.5 cursor-pointer"
                     >
                       <Play className="w-3 h-3 text-[#4da3ff] fill-[#4da3ff]" />
-                      <span>Play {item.effectType === 'baseball-crack' ? 'Crack Effect' : 'Effect'}</span>
+                      <span>Cinema FX</span>
                     </button>
 
                     <button

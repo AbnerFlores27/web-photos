@@ -1,11 +1,13 @@
-// Synthesized Web Audio sound effects for zero-dependency interactive animations
+// Cinematic Web Audio sound design for "Absolute Cinema" experiences
 
 let audioCtx: AudioContext | null = null;
 
 function getAudioContext(): AudioContext | null {
   if (typeof window === 'undefined') return null;
   if (!audioCtx) {
-    const AudioCtxClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    const AudioCtxClass =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
     if (AudioCtxClass) {
       audioCtx = new AudioCtxClass();
     }
@@ -17,132 +19,258 @@ function getAudioContext(): AudioContext | null {
 }
 
 /**
- * High impact baseball hit + glass shatter sound
+ * Rising Doppler whoosh for incoming baseball pitch
  */
-export function playBaseballGlassCrackSound() {
+export function playBaseballApproachSound(durationSec: number = 0.75, pitchFactor: number = 1.0) {
   const ctx = getAudioContext();
   if (!ctx) return;
-
   const now = ctx.currentTime;
 
-  // 1. Heavy wooden bat crack (transient frequency burst)
-  const osc = ctx.createOscillator();
-  const oscGain = ctx.createGain();
-  osc.type = 'triangle';
-  osc.frequency.setValueAtTime(450, now);
-  osc.frequency.exponentialRampToValueAtTime(80, now + 0.12);
-
-  oscGain.gain.setValueAtTime(0.7, now);
-  oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
-
-  osc.connect(oscGain);
-  oscGain.connect(ctx.destination);
-  osc.start(now);
-  osc.stop(now + 0.16);
-
-  // 2. High-frequency glass shatter noise burst (delayed slightly for impact)
-  const bufferSize = ctx.sampleRate * 0.35;
+  const dur = Math.max(0.2, durationSec);
+  const bufferSize = Math.floor(ctx.sampleRate * (dur + 0.1));
   const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
   const data = buffer.getChannelData(0);
   for (let i = 0; i < bufferSize; i++) {
     data[i] = Math.random() * 2 - 1;
   }
-
   const noise = ctx.createBufferSource();
   noise.buffer = buffer;
 
   const filter = ctx.createBiquadFilter();
-  filter.type = 'highpass';
-  filter.frequency.setValueAtTime(3200, now + 0.08);
+  filter.type = 'bandpass';
+  filter.Q.setValueAtTime(3.2, now);
+  filter.frequency.setValueAtTime(160 * pitchFactor, now);
+  filter.frequency.exponentialRampToValueAtTime(1550 * pitchFactor, now + dur * 0.9);
 
-  const noiseGain = ctx.createGain();
-  noiseGain.gain.setValueAtTime(0, now);
-  noiseGain.gain.setValueAtTime(0.85, now + 0.09);
-  noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.38);
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.04, now);
+  gain.gain.exponentialRampToValueAtTime(0.8, now + dur * 0.85);
+  gain.gain.exponentialRampToValueAtTime(0.01, now + dur);
 
   noise.connect(filter);
-  filter.connect(noiseGain);
-  noiseGain.connect(ctx.destination);
+  filter.connect(gain);
+  gain.connect(ctx.destination);
 
-  noise.start(now + 0.08);
-  noise.stop(now + 0.4);
-
-  // 3. Low rumble resonance
-  const sub = ctx.createOscillator();
-  const subGain = ctx.createGain();
-  sub.type = 'sine';
-  sub.frequency.setValueAtTime(110, now + 0.08);
-  sub.frequency.exponentialRampToValueAtTime(35, now + 0.35);
-
-  subGain.gain.setValueAtTime(0.6, now + 0.08);
-  subGain.gain.exponentialRampToValueAtTime(0.005, now + 0.4);
-
-  sub.connect(subGain);
-  subGain.connect(ctx.destination);
-  sub.start(now + 0.08);
-  sub.stop(now + 0.42);
+  noise.start(now);
+  noise.stop(now + dur + 0.05);
 }
 
 /**
- * Water splash sound for ocean sunset
+ * Interactive Tap/Click sound when user cracks glass further
+ */
+export function playTapCrackSound() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+
+  // Sharp snap
+  const osc = ctx.createOscillator();
+  const oscGain = ctx.createGain();
+  osc.type = 'sawtooth';
+  const freq = 1200 + Math.random() * 800;
+  osc.frequency.setValueAtTime(freq, now);
+  osc.frequency.exponentialRampToValueAtTime(200, now + 0.04);
+  oscGain.gain.setValueAtTime(0.4, now);
+  oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+  osc.connect(oscGain);
+  oscGain.connect(ctx.destination);
+  osc.start(now);
+  osc.stop(now + 0.06);
+
+  // Micro shard clink
+  const clink = ctx.createOscillator();
+  const clinkGain = ctx.createGain();
+  clink.type = 'sine';
+  const cFreq = 3200 + Math.random() * 2400;
+  clink.frequency.setValueAtTime(cFreq, now + 0.01);
+  clink.frequency.exponentialRampToValueAtTime(cFreq * 0.8, now + 0.07);
+  clinkGain.gain.setValueAtTime(0.2, now + 0.01);
+  clinkGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+  clink.connect(clinkGain);
+  clinkGain.connect(ctx.destination);
+  clink.start(now + 0.01);
+  clink.stop(now + 0.09);
+}
+
+/**
+ * Absolute Cinema: Triple-layer explosive bat crack, sub-bass shockwave, and crystalline glass shatter
+ */
+export function playBaseballGlassCrackSound() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+
+  // 1. Violent bat-to-ball wood crack (hard transient)
+  const osc = ctx.createOscillator();
+  const oscGain = ctx.createGain();
+  osc.type = 'square';
+  osc.frequency.setValueAtTime(520, now);
+  osc.frequency.exponentialRampToValueAtTime(65, now + 0.09);
+
+  oscGain.gain.setValueAtTime(0.9, now);
+  oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+
+  osc.connect(oscGain);
+  oscGain.connect(ctx.destination);
+  osc.start(now);
+  osc.stop(now + 0.11);
+
+  // 2. Cinematic Sub-Bass Impact Punch (40Hz body-feeling rumble)
+  const sub = ctx.createOscillator();
+  const subGain = ctx.createGain();
+  sub.type = 'sine';
+  sub.frequency.setValueAtTime(95, now);
+  sub.frequency.exponentialRampToValueAtTime(32, now + 0.45);
+
+  subGain.gain.setValueAtTime(1.0, now);
+  subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+
+  sub.connect(subGain);
+  subGain.connect(ctx.destination);
+  sub.start(now);
+  sub.stop(now + 0.52);
+
+  // 3. Multi-stage high-frequency tempered glass explosion
+  const bufferSize = ctx.sampleRate * 0.65;
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = Math.random() * 2 - 1;
+  }
+  const noise = ctx.createBufferSource();
+  noise.buffer = buffer;
+
+  const glassFilter = ctx.createBiquadFilter();
+  glassFilter.type = 'highpass';
+  glassFilter.frequency.setValueAtTime(2600, now + 0.02);
+
+  const noiseGain = ctx.createGain();
+  noiseGain.gain.setValueAtTime(0, now);
+  noiseGain.gain.setValueAtTime(0.95, now + 0.02);
+  noiseGain.gain.exponentialRampToValueAtTime(0.005, now + 0.55);
+
+  noise.connect(glassFilter);
+  glassFilter.connect(noiseGain);
+  noiseGain.connect(ctx.destination);
+
+  noise.start(now + 0.02);
+  noise.stop(now + 0.6);
+
+  // 4. Staggered falling crystalline shards (tinkling clinks)
+  const shardPitches = [3400, 4800, 2900, 5600, 3900];
+  shardPitches.forEach((freq, idx) => {
+    const delay = 0.08 + idx * 0.06;
+    const clink = ctx.createOscillator();
+    const clinkGain = ctx.createGain();
+    clink.type = 'sine';
+    clink.frequency.setValueAtTime(freq, now + delay);
+    clink.frequency.exponentialRampToValueAtTime(freq * 0.7, now + delay + 0.1);
+
+    clinkGain.gain.setValueAtTime(0.18, now + delay);
+    clinkGain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.12);
+
+    clink.connect(clinkGain);
+    clinkGain.connect(ctx.destination);
+    clink.start(now + delay);
+    clink.stop(now + delay + 0.13);
+  });
+}
+
+/**
+ * Ocean tidal surge & salty splash
  */
 export function playWaterSplashSound() {
   const ctx = getAudioContext();
   if (!ctx) return;
   const now = ctx.currentTime;
 
-  const bufferSize = ctx.sampleRate * 0.4;
+  // Ocean swell rumble
+  const sub = ctx.createOscillator();
+  const subGain = ctx.createGain();
+  sub.type = 'sine';
+  sub.frequency.setValueAtTime(70, now);
+  sub.frequency.exponentialRampToValueAtTime(30, now + 0.6);
+  subGain.gain.setValueAtTime(0.5, now);
+  subGain.gain.exponentialRampToValueAtTime(0.01, now + 0.7);
+  sub.connect(subGain);
+  subGain.connect(ctx.destination);
+  sub.start(now);
+  sub.stop(now + 0.75);
+
+  // Water spray splash
+  const bufferSize = ctx.sampleRate * 0.6;
   const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
   const data = buffer.getChannelData(0);
   for (let i = 0; i < bufferSize; i++) {
     data[i] = Math.random() * 2 - 1;
   }
-
   const noise = ctx.createBufferSource();
   noise.buffer = buffer;
 
   const filter = ctx.createBiquadFilter();
   filter.type = 'bandpass';
-  filter.frequency.setValueAtTime(1200, now);
-  filter.frequency.linearRampToValueAtTime(450, now + 0.35);
-  filter.Q.setValueAtTime(3, now);
+  filter.frequency.setValueAtTime(1400, now);
+  filter.frequency.exponentialRampToValueAtTime(450, now + 0.5);
 
   const gain = ctx.createGain();
-  gain.gain.setValueAtTime(0.5, now);
-  gain.gain.exponentialRampToValueAtTime(0.01, now + 0.38);
+  gain.gain.setValueAtTime(0.65, now);
+  gain.gain.exponentialRampToValueAtTime(0.01, now + 0.55);
 
   noise.connect(filter);
   filter.connect(gain);
   gain.connect(ctx.destination);
   noise.start(now);
-  noise.stop(now + 0.4);
+  noise.stop(now + 0.6);
 }
 
 /**
- * Ice freeze / blizzard crystalline sound
+ * Cryogenic blizzard freezing sound
  */
 export function playFreezeSound() {
   const ctx = getAudioContext();
   if (!ctx) return;
   const now = ctx.currentTime;
 
-  const osc = ctx.createOscillator();
+  // Ice cracking / crystallization
+  [1800, 2900, 4200].forEach((freq, i) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, now + i * 0.08);
+    osc.frequency.exponentialRampToValueAtTime(freq * 1.3, now + i * 0.08 + 0.2);
+
+    gain.gain.setValueAtTime(0.2, now + i * 0.08);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.08 + 0.25);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now + i * 0.08);
+    osc.stop(now + i * 0.08 + 0.26);
+  });
+
+  // Howling cold wind
+  const bufferSize = ctx.sampleRate * 0.7;
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+  const noise = ctx.createBufferSource();
+  noise.buffer = buffer;
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.setValueAtTime(600, now);
+  filter.frequency.exponentialRampToValueAtTime(1100, now + 0.5);
   const gain = ctx.createGain();
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(980, now);
-  osc.frequency.exponentialRampToValueAtTime(2400, now + 0.25);
-
-  gain.gain.setValueAtTime(0.2, now);
-  gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
-
-  osc.connect(gain);
+  gain.gain.setValueAtTime(0.4, now);
+  gain.gain.exponentialRampToValueAtTime(0.01, now + 0.65);
+  noise.connect(filter);
+  filter.connect(gain);
   gain.connect(ctx.destination);
-  osc.start(now);
-  osc.stop(now + 0.3);
+  noise.start(now);
+  noise.stop(now + 0.7);
 }
 
 /**
- * Cosmic star warp whoosh sound
+ * Interstellar hyperspace warp sound
  */
 export function playWarpSound() {
   const ctx = getAudioContext();
@@ -152,38 +280,123 @@ export function playWarpSound() {
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
   osc.type = 'sawtooth';
-  osc.frequency.setValueAtTime(120, now);
-  osc.frequency.exponentialRampToValueAtTime(880, now + 0.3);
+  osc.frequency.setValueAtTime(80, now);
+  osc.frequency.exponentialRampToValueAtTime(1800, now + 0.6);
 
-  gain.gain.setValueAtTime(0.18, now);
-  gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+  gain.gain.setValueAtTime(0.05, now);
+  gain.gain.exponentialRampToValueAtTime(0.55, now + 0.45);
+  gain.gain.exponentialRampToValueAtTime(0.01, now + 0.7);
 
   osc.connect(gain);
   gain.connect(ctx.destination);
   osc.start(now);
-  osc.stop(now + 0.36);
+  osc.stop(now + 0.75);
 }
 
 /**
- * Cute bounce chime for puppy
+ * Warm melodic chime for the golden retriever puppy
  */
 export function playChimeSound() {
   const ctx = getAudioContext();
   if (!ctx) return;
   const now = ctx.currentTime;
 
-  [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
+  // Major pentatonic chime cascade: C5, E5, G5, C6
+  const freqs = [523.25, 659.25, 783.99, 1046.5];
+  freqs.forEach((freq, idx) => {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(freq, now + i * 0.06);
+    osc.frequency.setValueAtTime(freq, now + idx * 0.08);
 
-    gain.gain.setValueAtTime(0.2, now + i * 0.06);
-    gain.gain.exponentialRampToValueAtTime(0.005, now + i * 0.06 + 0.2);
+    gain.gain.setValueAtTime(0.25, now + idx * 0.08);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.45);
 
     osc.connect(gain);
     gain.connect(ctx.destination);
-    osc.start(now + i * 0.06);
-    osc.stop(now + i * 0.06 + 0.22);
+    osc.start(now + idx * 0.08);
+    osc.stop(now + idx * 0.08 + 0.5);
+  });
+}
+
+/**
+ * Cyberpunk neon surge sound
+ */
+export function playCyberPulseSound() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = 'sawtooth';
+  osc.frequency.setValueAtTime(300, now);
+  osc.frequency.exponentialRampToValueAtTime(45, now + 0.35);
+
+  gain.gain.setValueAtTime(0.6, now);
+  gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(now);
+  osc.stop(now + 0.45);
+}
+
+/**
+ * Wind vortex rush for autumn foliage
+ */
+export function playWindRushSound() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+
+  const bufferSize = ctx.sampleRate * 0.6;
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+  const noise = ctx.createBufferSource();
+  noise.buffer = buffer;
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(300, now);
+  filter.frequency.exponentialRampToValueAtTime(1600, now + 0.3);
+  filter.frequency.exponentialRampToValueAtTime(200, now + 0.6);
+
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.05, now);
+  gain.gain.linearRampToValueAtTime(0.5, now + 0.25);
+  gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+
+  noise.connect(filter);
+  filter.connect(gain);
+  gain.connect(ctx.destination);
+  noise.start(now);
+  noise.stop(now + 0.65);
+}
+
+/**
+ * Satisfying glass repair sound
+ */
+export function playGlassRepairSound() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+
+  const freqs = [350, 480, 720, 1100];
+  freqs.forEach((freq, i) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq * 1.5, now + i * 0.05);
+    osc.frequency.exponentialRampToValueAtTime(freq, now + i * 0.05 + 0.15);
+
+    gain.gain.setValueAtTime(0.15, now + i * 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.05 + 0.2);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now + i * 0.05);
+    osc.stop(now + i * 0.05 + 0.25);
   });
 }
