@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title description">
+  <title id="title">ABNER FLORES</title>
+  <desc id="description">A golden retriever thumbnail beside an empty box for the next image, with a blue ABNER FLORES heading and gold birthday on a midnight-blue background.</desc>
+  <defs>
+    <clipPath id="dog-photo">
+      <rect x="180" y="55" width="360" height="400" rx="28"/>
+    </clipPath>
+  </defs>
+  <rect width="1200" height="760" fill="#191970"/>
+  <image
+    href="cute-dog.jpg"
+    x="180"
+    y="55"
+    width="360"
+    height="400"
+    preserveAspectRatio="xMidYMid slice"
+    clip-path="url(#dog-photo)"
+  />
+  <rect
+    x="660"
+    y="55"
+    width="360"
+    height="400"
+    rx="28"
+    fill="#202080"
+    stroke="#4da3ff"
+    stroke-width="5"
+    stroke-dasharray="18 14"
+  />
+  <text
+    x="840"
+    y="245"
+    fill="#b8c5ff"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="25"
+    font-weight="700"
+    letter-spacing="3"
+    text-anchor="middle"
+  >NEXT IMAGE</text>
+  <text
+    x="840"
+    y="285"
+    fill="#b8c5ff"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="20"
+    text-anchor="middle"
+  >thumbnail</text>
+  <text
+    x="600"
+    y="590"
+    fill="#4da3ff"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="78"
+    font-weight="800"
+    text-anchor="middle"
+  >ABNER FLORES</text>
+  <text
+    x="600"
+    y="675"
+    fill="rgb(207, 189, 33)"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="30"
+    text-anchor="middle"
+    text-decoration="underline"
+  >may 21st 2012</text>
+</svg>

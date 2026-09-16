@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>wd.photos — Light, Motion &amp; Natural Optics</title>
+    <style>
+      :root {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+        color: #e2e8f0;
+        background: #0a0a22;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: #0a0a22;
+        display: flex;
+        flex-direction: column;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      /* Navigation */
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        backdrop-filter: blur(16px);
+        background: rgba(13, 13, 46, 0.92);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 0.85rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-weight: 800;
+        font-size: 1.1rem;
+        color: #ffffff;
+      }
+      .brand-badge {
+        font-size: 0.65rem;
+        background: rgba(77, 163, 255, 0.2);
+        color: #4da3ff;
+        border: 1px solid rgba(77, 163, 255, 0.4);
+        padding: 0.15rem 0.45rem;
+        border-radius: 999px;
+        text-transform: uppercase;
+        font-weight: 700;
+      }
+      .nav-links {
+        display: flex;
+        gap: 1.25rem;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #b8c5ff;
+      }
+      .nav-links a:hover {
+        color: #ffffff;
+      }
+
+      /* Hero */
+      .hero {
+        padding: 3.5rem 1.5rem 2.5rem;
+        text-align: center;
+        background: radial-gradient(circle at 50% 20%, #151555 0%, #0a0a22 75%);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .eyebrow {
+        display: inline-block;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: #9cb0f5;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        padding: 0.35rem 0.85rem;
+        border-radius: 999px;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        margin: 0 0 0.8rem;
+        font-size: clamp(2.2rem, 6vw, 3.8rem);
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        line-height: 1.08;
+        color: #ffffff;
+      }
+      h1 span {
+        color: #4da3ff;
+      }
+      .subtitle {
+        max-width: 680px;
+        margin: 0 auto;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: #9cb0f5;
+      }
+      .notice-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 1.25rem;
+        background: rgba(20, 20, 68, 0.9);
+        border: 1px solid rgba(77, 163, 255, 0.35);
+        padding: 0.5rem 1rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        color: #cbd5e1;
+      }
+
+      /* Main Grid */
+      main {
+        flex: 1;
+        max-width: 1200px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 2.5rem 1.5rem 4rem;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 1.75rem;
+      }
+
+      /* Cards */
+      .photo-card {
+        background: #11113c;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 1rem;
+        overflow: hidden;
+        transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        display: flex;
+        flex-direction: column;
+      }
+      .photo-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(255, 255, 255, 0.25);
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+      }
+      .img-container {
+        position: relative;
+        aspect-ratio: 4 / 3;
+        overflow: hidden;
+        background: #18184e;
+        cursor: pointer;
+      }
+      .gallery-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        display: block;
+      }
+      .photo-card:hover .gallery-img {
+        transform: scale(1.05);
+      }
+      .play-hint {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        opacity: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.2s ease;
+        color: white;
+        text-align: center;
+        font-size: 0.8rem;
+        font-weight: bold;
+      }
+      .img-container:hover .play-hint {
+        opacity: 1;
+      }
+      .play-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: #4da3ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.4rem;
+        box-shadow: 0 0 20px rgba(77, 163, 255, 0.6);
+      }
+      .badge {
+        position: absolute;
+        top: 0.75rem;
+        left: 0.75rem;
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        background: rgba(0, 0, 0, 0.65);
+        backdrop-filter: blur(8px);
+        color: #e2e8f0;
+        padding: 0.2rem 0.6rem;
+        border-radius: 999px;
+      }
+      .badge.orig {
+        background: rgba(77, 163, 255, 0.9);
+        color: #ffffff;
+      }
+      .badge.gen {
+        background: rgba(155, 130, 237, 0.9);
+        color: #ffffff;
+      }
+      .card-info {
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        justify-content: space-between;
+      }
+      .card-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin: 0 0 0.25rem;
+      }
+      .card-meta {
+        font-size: 0.75rem;
+        color: #8ea4ee;
+        margin-bottom: 0.75rem;
+      }
+      .natural-desc-box {
+        background: #0d0d2e;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 10px;
+        padding: 0.75rem;
+        font-size: 0.78rem;
+        line-height: 1.6;
+        color: #b9c8e8;
+        margin-bottom: 0.75rem;
+      }
+      .natural-desc-title {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        color: #4da3ff;
+        margin-bottom: 0.35rem;
+      }
+      .action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        width: 100%;
+        background: #1a1a60;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: white;
+        padding: 0.55rem;
+        border-radius: 10px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+      .action-btn:hover {
+        background: #25257d;
+      }
+
+      /* Cracked Screen Overlay */
+      #fx-layer {
+        position: fixed;
+        inset: 0;
+        z-index: 999;
+        background: rgba(0, 0, 0, 0.65);
+        backdrop-filter: blur(4px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+      @keyframes baseballFly {
+        0% { transform: scale(0.05) rotate(0deg); opacity: 0.2; }
+        40% { transform: scale(0.3) rotate(240deg); opacity: 0.8; }
+        80% { transform: scale(1.5) rotate(540deg); opacity: 1; }
+        100% { transform: scale(4.5) rotate(760deg); opacity: 1; }
+      }
+      @keyframes shakeScreen {
+        0% { transform: translate(0, 0); }
+        20% { transform: translate(-14px, 12px); }
+        40% { transform: translate(14px, -10px); }
+        60% { transform: translate(-10px, -8px); }
+        80% { transform: translate(8px, 8px); }
+        100% { transform: translate(0, 0); }
+      }
+      .flying-ball {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: white;
+        border: 3px solid #dc2626;
+        animation: baseballFly 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+      }
+      .shaking {
+        animation: shakeScreen 0.45s ease-in-out;
+      }
+
+      footer {
+        background: #07071a;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 2.5rem 1.5rem;
+        text-align: center;
+        font-size: 0.8rem;
+        color: #8ea4ee;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav>
+      <div class="brand">
+        <span>wd.photos</span>
+        <span class="brand-badge">Archive</span>
+      </div>
+      <div class="nav-links">
+        <a href="#gallery">Exhibition</a>
+        <a href="https://github.com/AbnerFlores27/wd.photos" target="_blank" rel="noreferrer">GitHub</a>
+      </div>
+    </nav>
+
+    <!-- Header Hero -->
+    <section class="hero">
+      <span class="eyebrow">Natural Light &bull; Motion &bull; Optics</span>
+      <h1>Light, Motion &amp; <span>Natural Optics</span></h1>
+      <p class="subtitle">
+        An authentic visual collection curated by <strong>Abner Flores</strong>. Every photograph includes dedicated natural environmental lighting observations and interactive screen animations!
+      </p>
+      <div class="notice-pill">
+        ⚾ <strong>Interactive:</strong> Click any photo to launch its custom animation, including the flying baseball screen crack!
+      </div>
+    </section>
+
+    <!-- Main Grid -->
+    <main id="gallery">
+      <div class="grid">
+        <!-- 1. Mike Trout -->
+        <article class="photo-card">
+          <div class="img-container" onclick="triggerBaseballCrack('Mike Trout')">
+            <img class="gallery-img" src="https://cdn.britannica.com/88/221888-050-7F121E32/Baseball-player-Mike-Trout-2020.jpg" alt="Mike Trout" />
+            <span class="badge orig">Original</span>
+            <div class="play-hint">
+              <div class="play-icon">▶</div>
+              <span>Click for Baseball Screen Crack!</span>
+            </div>
+          </div>
+          <div class="card-info">
+            <h3 class="card-title">1. Mike Trout (Angels Legend)</h3>
+            <div class="card-meta">Canon EOS-1D X Mark III &bull; Angel Stadium, Anaheim, CA</div>
+            <div class="natural-desc-box">
+              <div class="natural-desc-title">Natural Environmental &amp; Lighting Notes</div>
+              Standing in the outfield under the blazing Southern California sun, Mike Trout embodies raw athletic concentration. The natural grass of Angel Stadium shimmers in the dry midday heat while red clay and infield chalk dust cling to his uniform from live game action. Natural sunlight catches the stitching of his Angels jersey and the focused intensity in his eyes.
+            </div>
+            <button class="action-btn" onclick="triggerBaseballCrack('Mike Trout')">⚾ Play Baseball Crack Animation</button>
+          </div>
+        </article>
+
+        <!-- 2. Golden Retriever Puppy -->
+        <article class="photo-card">
+          <div class="img-container" onclick="triggerGenericAlert('Golden Retriever Puppy', '🎾 Cute Tennis Ball &amp; Paw Prints!')">
+            <img class="gallery-img" src="https://images.unsplash.com/photo-1552053831-71594a27632d?w=800&auto=format&fit=crop&q=80" alt="Golden Retriever Puppy" />
+            <span class="badge orig">Original</span>
+            <div class="play-hint">
+              <div class="play-icon">▶</div>
+              <span>Click to Play Animation!</span>
+            </div>
+          </div>
+          <div class="card-info">
+            <h3 class="card-title">2. Golden Retriever Puppy</h3>
+            <div class="card-meta">Sony A7R IV &bull; 85mm f/1.4 &bull; Sunnyvale, CA</div>
+            <div class="natural-desc-box">
+              <div class="natural-desc-title">Natural Environmental &amp; Lighting Notes</div>
+              Bathed in the gentle golden rays of early morning sunlight, this puppy rests quietly among dew-kissed blades of spring lawn. Every individual strand of soft honey fur catches the warm backlighting, forming a glowing halo around its floppy ears and dark curious eyes. The soil beneath is cool and damp, grounding the portrait in pure organic serenity.
+            </div>
+            <button class="action-btn" onclick="triggerGenericAlert('Golden Retriever Puppy', '🎾 Cute Tennis Ball &amp; Paw Prints!')">🐾 Play Puppy Animation</button>
+          </div>
+        </article>
+
+        <!-- 3. Coastal Sunset -->
+        <article class="photo-card">
+          <div class="img-container" onclick="triggerGenericAlert('Pacific Coast Sunset', '🌊 Tidal Wave &amp; Ocean Mist!')">
+            <img class="gallery-img" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80" alt="Pacific Coast Sunset" />
+            <span class="badge gen">AI Synthesized 1/2</span>
+            <div class="play-hint">
+              <div class="play-icon">▶</div>
+              <span>Click to Play Animation!</span>
+            </div>
+          </div>
+          <div class="card-info">
+            <h3 class="card-title">3. Pacific Coast Sunset</h3>
+            <div class="card-meta">Gemini Imagen 3 &bull; Big Sur Coastline Synthesis</div>
+            <div class="natural-desc-box">
+              <div class="natural-desc-title">Natural Environmental &amp; Lighting Notes</div>
+              A sweeping study in maritime twilight along the rugged Pacific rim. Receding low-tide surf leaves thin, mirror-like sheets of seawater over dark sand, reflecting vivid pastel gradients of coral pink, molten gold, and evening indigo. Frothy sea foam curls softly along the shore while ocean spray fills the horizon with warm luminous mist.
+            </div>
+            <button class="action-btn" onclick="triggerGenericAlert('Pacific Coast Sunset', '🌊 Tidal Wave &amp; Ocean Mist!')">🌊 Play Wave Animation</button>
+          </div>
+        </article>
+
+        <!-- 4. Baseball Stadium -->
+        <article class="photo-card">
+          <div class="img-container" onclick="triggerBaseballCrack('Baseball Stadium at Dusk')">
+            <img class="gallery-img" src="https://images.unsplash.com/photo-1508344928928-7165b67de128?w=800&auto=format&fit=crop&q=80" alt="Baseball Stadium at Dusk" />
+            <span class="badge gen">AI Synthesized 2/2</span>
+            <div class="play-hint">
+              <div class="play-icon">▶</div>
+              <span>Click for Baseball Screen Crack!</span>
+            </div>
+          </div>
+          <div class="card-info">
+            <h3 class="card-title">4. Baseball Stadium at Dusk</h3>
+            <div class="card-meta">Gemini Imagen 3 &bull; Championship Field</div>
+            <div class="natural-desc-box">
+              <div class="natural-desc-title">Natural Environmental &amp; Lighting Notes</div>
+              The electric stillness of game day just as dusk falls across the stadium bowl. The pristine infield grass is manicured into sharp geometric crosshatch patterns by the grounds crew, set against rich crushed brick dust on the basepaths. High overhead, towering floodlight stanchions begin to hum to life against a deep purple-blue twilight sky.
+            </div>
+            <button class="action-btn" onclick="triggerBaseballCrack('Baseball Stadium at Dusk')">⚾ Play Baseball Crack Animation</button>
+          </div>
+        </article>
+
+        <!-- 5. Alpine Peaks -->
+        <article class="photo-card">
+          <div class="img-container" onclick="triggerGenericAlert('Alpine Mountain Peaks', '❄️ Sub-Zero Freeze &amp; Snow Crystals!')">
+            <img class="gallery-img" src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&auto=format&fit=crop&q=80" alt="Alpine Mountain Peaks" />
+            <span class="badge">Nature</span>
+            <div class="play-hint">
+              <div class="play-icon">▶</div>
+              <span>Click to Play Animation!</span>
+            </div>
+          </div>
+          <div class="card-info">
+            <h3 class="card-title">5. Alpine Mountain Peaks</h3>
+            <div class="card-meta">Nikon Z7 II &bull; Swiss Alps, Valais</div>
+            <div class="natural-desc-box">
+              <div class="natural-desc-title">Natural Environmental &amp; Lighting Notes</div>
+              Jagged granite monoliths piercing high into the sub-zero troposphere. Freshly fallen powder snow clings tenaciously to sheer vertical couloirs, carved over geological epochs by alpine glaciers and howling summit winds. The thin, ultra-clean atmosphere produces intense optical clarity.
+            </div>
+            <button class="action-btn" onclick="triggerGenericAlert('Alpine Mountain Peaks', '❄️ Sub-Zero Freeze &amp; Snow Crystals!')">❄️ Play Frost Animation</button>
+          </div>
+        </article>
+
+        <!-- 6. Cozy Cafe -->
+        <article class="photo-card">
+          <div class="img-container" onclick="triggerGenericAlert('Cozy Cafe &amp; Notebook', '☕ Rising Steam &amp; Warm Cafe Glow!')">
+            <img class="gallery-img" src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800&auto=format&fit=crop&q=80" alt="Cozy Cafe and Notebook" />
+            <span class="badge">Lifestyle</span>
+            <div class="play-hint">
+              <div class="play-icon">▶</div>
+              <span>Click to Play Animation!</span>
+            </div>
+          </div>
+          <div class="card-info">
+            <h3 class="card-title">6. Cozy Cafe &amp; Notebook</h3>
+            <div class="card-meta">Fujifilm X-T4 &bull; Seattle, WA</div>
+            <div class="natural-desc-box">
+              <div class="natural-desc-title">Natural Environmental &amp; Lighting Notes</div>
+              Morning light slants through a rain-flecked window, illuminating delicate wisps of steam rising from a dark roast espresso in a speckled stoneware mug. The rustic wooden tabletop displays natural wood grain, gentle weathering, and rings left by countless slow mornings of reflection.
+            </div>
+            <button class="action-btn" onclick="triggerGenericAlert('Cozy Cafe &amp; Notebook', '☕ Rising Steam &amp; Warm Cafe Glow!')">☕ Play Steam Animation</button>
+          </div>
+        </article>
+
+        <!-- 7. City Lights -->
+        <article class="photo-card">
+          <div class="img-container" onclick="triggerGenericAlert('City Skyline at Twilight', '⚡ Metropolitan Pulse &amp; Neon Flash!')">
+            <img class="gallery-img" src="https://images.unsplash.com/photo-1477959858617-67f30bc75b82?w=800&auto=format&fit=crop&q=80" alt="City Skyline at Twilight" />
+            <span class="badge">Urban</span>
+            <div class="play-hint">
+              <div class="play-icon">▶</div>
+              <span>Click to Play Animation!</span>
+            </div>
+          </div>
+          <div class="card-info">
+            <h3 class="card-title">7. City Skyline at Twilight</h3>
+            <div class="card-meta">Leica Q2 &bull; Chicago, IL</div>
+            <div class="natural-desc-box">
+              <div class="natural-desc-title">Natural Environmental &amp; Lighting Notes</div>
+              The dramatic twilight threshold where fading daylight yields to the glowing pulse of the metropolis. Glass high-rises mirror the cool deep sapphire of the evening sky, punctuated by thousands of warm tungsten office lights. Across the river, reflections ripple into shimmering vertical ribbons.
+            </div>
+            <button class="action-btn" onclick="triggerGenericAlert('City Skyline at Twilight', '⚡ Metropolitan Pulse &amp; Neon Flash!')">⚡ Play City Pulse Animation</button>
+          </div>
+        </article>
+
+        <!-- 8. Forest Trail -->
+        <article class="photo-card">
+          <div class="img-container" onclick="triggerGenericAlert('Sunlit Autumn Forest Trail', '🍁 Swirling Autumn Leaves!')">
+            <img class="gallery-img" src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&auto=format&fit=crop&q=80" alt="Sunlit Autumn Forest Trail" />
+            <span class="badge">Nature</span>
+            <div class="play-hint">
+              <div class="play-icon">▶</div>
+              <span>Click to Play Animation!</span>
+            </div>
+          </div>
+          <div class="card-info">
+            <h3 class="card-title">8. Sunlit Autumn Forest Trail</h3>
+            <div class="card-meta">Hasselblad X1D II &bull; Black Forest, Germany</div>
+            <div class="natural-desc-box">
+              <div class="natural-desc-title">Natural Environmental &amp; Lighting Notes</div>
+              Low autumn sunbeams cut through the tall forest canopy in dramatic volumetric shafts of light, illuminating airborne morning mist, spores, and falling needles. The soft forest floor is blanketed by a rich mosaic of copper, amber, and chestnut oak leaves that muffle footsteps.
+            </div>
+            <button class="action-btn" onclick="triggerGenericAlert('Sunlit Autumn Forest Trail', '🍁 Swirling Autumn Leaves!')">🍁 Play Leaves Animation</button>
+          </div>
+        </article>
+
+        <!-- 9. Starry Sky -->
+        <article class="photo-card">
+          <div class="img-container" onclick="triggerGenericAlert('Starry Milky Way Sky', '✨ Interstellar Warp Speed!')">
+            <img class="gallery-img" src="https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=800&auto=format&fit=crop&q=80" alt="Starry Milky Way Sky" />
+            <span class="badge">Cosmos</span>
+            <div class="play-hint">
+              <div class="play-icon">▶</div>
+              <span>Click to Play Animation!</span>
+            </div>
+          </div>
+          <div class="card-info">
+            <h3 class="card-title">9. Starry Milky Way Sky</h3>
+            <div class="card-meta">Sony A7S III &bull; Joshua Tree, CA</div>
+            <div class="natural-desc-box">
+              <div class="natural-desc-title">Natural Environmental &amp; Lighting Notes</div>
+              Gazing into deep cosmic time under an authentic Bortle Class 1 dark sky reserve. The galactic core of the Milky Way arcs like a luminous river across the zenith, filled with millions of distant stellar furnaces, pink emission nebulae, and dark interstellar dust lanes silhouetted against cosmic starlight.
+            </div>
+            <button class="action-btn" onclick="triggerGenericAlert('Starry Milky Way Sky', '✨ Interstellar Warp Speed!')">✨ Play Warp Animation</button>
+          </div>
+        </article>
+      </div>
+    </main>
+
+    <!-- Cracked Screen Overlay Container -->
+    <div id="fx-layer" onclick="dismissFx()">
+      <div id="fx-inner" style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <p>&copy; 2026 wd.photos &bull; Curated by Abner Flores &bull; Natural Light &amp; Motion Series</p>
+      <p>
+        <a href="https://github.com/AbnerFlores27/wd.photos" target="_blank" rel="noreferrer">
+          AbnerFlores27 / wd.photos
+        </a>
+      </p>
+    </footer>
+
+    <script>
+      function playSynthCrack() {
+        try {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (!AudioCtx) return;
+          const ctx = new AudioCtx();
+          const now = ctx.currentTime;
+          
+          // Bat crack
+          const osc = ctx.createOscillator();
+          const oscGain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(420, now);
+          osc.frequency.exponentialRampToValueAtTime(70, now + 0.1);
+          oscGain.gain.setValueAtTime(0.7, now);
+          oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+          osc.connect(oscGain);
+          oscGain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.13);
+
+          // Glass shatter noise
+          const bufferSize = ctx.sampleRate * 0.3;
+          const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+          const noise = ctx.createBufferSource();
+          noise.buffer = buffer;
+          const filter = ctx.createBiquadFilter();
+          filter.type = 'highpass';
+          filter.frequency.setValueAtTime(3000, now + 0.08);
+          const noiseGain = ctx.createGain();
+          noiseGain.gain.setValueAtTime(0.8, now + 0.08);
+          noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+          noise.connect(filter);
+          filter.connect(noiseGain);
+          noiseGain.connect(ctx.destination);
+          noise.start(now + 0.08);
+          noise.stop(now + 0.36);
+        } catch (e) {}
+      }
+
+      function triggerBaseballCrack(title) {
+        const layer = document.getElementById('fx-layer');
+        const inner = document.getElementById('fx-inner');
+        layer.style.display = 'flex';
+        inner.innerHTML = '<div class="flying-ball"></div>';
+        
+        setTimeout(() => {
+          document.body.classList.add('shaking');
+          playSynthCrack();
+          inner.innerHTML = \`
+            <svg viewBox="0 0 1000 1000" style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.95;">
+              <circle cx="500" cy="500" r="70" fill="rgba(0,0,0,0.8)" stroke="#fff" stroke-width="4" />
+              <g stroke="#ffffff" stroke-width="3.5" fill="none">
+                <path d="M 500 500 L 120 0 L 80 50" />
+                <path d="M 500 500 L 450 0 L 410 70" />
+                <path d="M 500 500 L 820 0 L 890 80" />
+                <path d="M 500 500 L 1000 210 L 930 290" />
+                <path d="M 500 500 L 1000 580 L 880 640" />
+                <path d="M 500 500 L 920 1000 L 820 900" />
+                <path d="M 500 500 L 580 1000 L 530 880" />
+                <path d="M 500 500 L 180 1000 L 250 890" />
+                <path d="M 500 500 L 0 740 L 90 690" />
+                <path d="M 500 500 L 0 380 L 120 410" />
+                <path d="M 500 500 L 0 90 L 70 140" />
+              </g>
+            </svg>
+            <div style="position: relative; z-index: 10; width: 140px; height: 140px; border-radius: 50%; background: #fff; border: 4px solid #cbd5e1; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 40px rgba(0,0,0,0.8);">
+              <span style="font-size: 80px;">⚾</span>
+            </div>
+            <div style="position: absolute; bottom: 30px; background: rgba(13,13,43,0.95); border: 1px solid rgba(255,255,255,0.2); padding: 12px 24px; border-radius: 16px; color: white; font-weight: bold; font-size: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+              ⚾ Outfield Liner Screen Smash! &bull; Tap Anywhere to Repair Glass
+            </div>
+          \`;
+          setTimeout(() => document.body.classList.remove('shaking'), 500);
+        }, 650);
+      }
+
+      function triggerGenericAlert(title, message) {
+        const layer = document.getElementById('fx-layer');
+        const inner = document.getElementById('fx-inner');
+        layer.style.display = 'flex';
+        inner.innerHTML = \`
+          <div style="text-align: center; color: white; background: rgba(13,13,43,0.92); border: 1px solid rgba(255,255,255,0.2); padding: 30px; border-radius: 20px; max-width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.7);">
+            <h3 style="margin: 0 0 10px; font-size: 20px; color: #4da3ff;">\${title}</h3>
+            <p style="margin: 0 0 20px; font-size: 24px;">\${message}</p>
+            <div style="font-size: 12px; color: #8ea4ee;">Tap anywhere to dismiss</div>
+          </div>
+        \`;
+      }
+
+      function dismissFx() {
+        document.getElementById('fx-layer').style.display = 'none';
+        document.getElementById('fx-inner').innerHTML = '';
+      }
+    </script>
+  </body>
+</html>

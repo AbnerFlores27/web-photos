@@ -1,0 +1,6 @@
+{
+  "name": "wd.photos",
+  "description": "9-photo responsive gallery template for wd.photos, featuring curated and custom generated photography.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
